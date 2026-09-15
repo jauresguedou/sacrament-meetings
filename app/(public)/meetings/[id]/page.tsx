@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
-import MeetingDetail from "../../components/MeetingDetail";
-import type { SacramentMeeting } from "../../lib/types";
+import MeetingDetail from "../../../components/MeetingDetail";
+import type { SacramentMeeting } from "../../../lib/types";
 
 export const dynamic = "force-dynamic";
 
