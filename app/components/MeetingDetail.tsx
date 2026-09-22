@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { SacramentMeeting } from "../lib/types";
 
 type MeetingDetailProps = {
@@ -133,6 +134,15 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
           )}
         </div>
       </section>
+
+      <div className="mt-8 flex justify-end border-t border-slate-200 pt-6">
+        <Link
+          href={`/meetings/${meeting.id}/edit`}
+          className="rounded-md bg-slate-900 px-4 py-2 font-medium text-white transition-colors hover:bg-slate-700"
+        >
+          Update meeting
+        </Link>
+      </div>
     </article>
   );
 }

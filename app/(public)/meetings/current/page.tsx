@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 
 import { getMeetings } from "../../../lib/meetings-db";
 
-function getCurrentSundayDate() {
+function getUpcomingSundayDate() {
   const sunday = new Date();
-  sunday.setDate(sunday.getDate() - sunday.getDay());
+  const daysUntilSunday = (7 - sunday.getDay()) % 7;
+  sunday.setDate(sunday.getDate() + daysUntilSunday);
 
   const year = sunday.getFullYear();
   const month = String(sunday.getMonth() + 1).padStart(2, "0");
@@ -14,7 +15,7 @@ function getCurrentSundayDate() {
 }
 
 export default async function CurrentMeetingPage() {
-  const meetings = await getMeetings("", 1, getCurrentSundayDate());
+  const meetings = await getMeetings("", 1, getUpcomingSundayDate());
   const currentMeeting = meetings[0];
 
   if (!currentMeeting) {

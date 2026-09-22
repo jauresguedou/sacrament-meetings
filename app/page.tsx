@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -14,6 +15,12 @@ export default function Home() {
           <p className="mt-4 max-w-xl text-lg text-slate-600">
             Review the agenda, speaker list, hymns, and meeting details in one place.
           </p>
+          <Link
+            href="/meetings/new"
+            className="mt-6 inline-flex w-fit rounded-md bg-slate-900 px-4 py-2 font-medium text-white transition-colors hover:bg-slate-700"
+          >
+            Create new meeting
+          </Link>
         </div>
 
         <div className="relative overflow-hidden rounded-2xl bg-slate-100">

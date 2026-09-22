@@ -33,20 +33,26 @@ export function MeetingSearch() {
   return (
     <div className="flex flex-wrap gap-3">
       <input
+        id="meeting-query"
         type="search"
         placeholder="Search by speaker, leader, or meeting type..."
         defaultValue={searchParams.get('query')?.toString()}
         onChange={(e) => handleSearch(e.target.value)}
-        aria-label="Search meetings"
+        aria-describedby="meeting-query-error"
         className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
       />
+      <label htmlFor="meeting-query" className="sr-only">Search meetings</label>
+      <div id="meeting-query-error" aria-live="polite" />
       <input
+        id="meeting-date"
         type="date"
         defaultValue={searchParams.get('date')?.toString()}
         onChange={(e) => handleDateSearch(e.target.value)}
-        aria-label="Filter meetings by date"
+        aria-describedby="meeting-date-error"
         className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
       />
+      <label htmlFor="meeting-date" className="sr-only">Filter meetings by date</label>
+      <div id="meeting-date-error" aria-live="polite" />
     </div>
   );
 }

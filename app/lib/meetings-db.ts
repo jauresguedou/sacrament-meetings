@@ -85,20 +85,87 @@ export async function getMeetingById(
   return (rows[0] as unknown as SacramentMeeting) ?? null;
 }
 
-// Mutation stubs — will be wired to the database in Week 04
 export async function addMeeting(
   data: Omit<SacramentMeeting, 'id'>
 ): Promise<SacramentMeeting> {
-  throw new Error('addMeeting: database implementation coming in Week 04');
+  const rows = await sql`
+    INSERT INTO meetings (
+      date,
+      meeting_type,
+      presiding,
+      conducting,
+      announcements,
+      opening_hymn,
+      opening_prayer,
+      ward_business,
+      stake_business,
+      sacrament_hymn,
+      speakers,
+      closing_hymn,
+      closing_prayer
+    ) VALUES (
+      ${data.date}::date,
+      ${data.meetingType},
+      ${data.presiding},
+      ${data.conducting},
+      ${data.announcements ?? []}::text[],
+      ${JSON.stringify(data.openingHymn)}::jsonb,
+      ${data.openingPrayer},
+      ${JSON.stringify(data.wardBusiness)}::jsonb,
+      ${data.stakeBusiness},
+      ${JSON.stringify(data.sacramentHymn)}::jsonb,
+      ${JSON.stringify(data.speakers)}::jsonb,
+      ${JSON.stringify(data.closingHymn)}::jsonb,
+      ${data.closingPrayer}
+    )
+    RETURNING id
+  `;
+
+  const meeting = await getMeetingById(Number(rows[0].id));
+  if (!meeting) {
+    throw new Error('The meeting was created but could not be loaded.');
+  }
+
+  return meeting;
 }
 
 export async function updateMeeting(
   id: number,
   updates: Partial<SacramentMeeting>
 ): Promise<SacramentMeeting | null> {
-  throw new Error('updateMeeting: database implementation coming in Week 04');
+  const rows = await sql`
+    UPDATE meetings
+    SET
+      date = COALESCE(${updates.date ?? null}::date, date),
+      meeting_type = COALESCE(${updates.meetingType ?? null}, meeting_type),
+      presiding = COALESCE(${updates.presiding ?? null}, presiding),
+      conducting = COALESCE(${updates.conducting ?? null}, conducting),
+      announcements = COALESCE(${updates.announcements ?? null}::text[], announcements),
+      opening_hymn = COALESCE(${updates.openingHymn ? JSON.stringify(updates.openingHymn) : null}::jsonb, opening_hymn),
+      opening_prayer = COALESCE(${updates.openingPrayer ?? null}, opening_prayer),
+      ward_business = COALESCE(${updates.wardBusiness ? JSON.stringify(updates.wardBusiness) : null}::jsonb, ward_business),
+      stake_business = COALESCE(${updates.stakeBusiness ?? null}, stake_business),
+      sacrament_hymn = COALESCE(${updates.sacramentHymn ? JSON.stringify(updates.sacramentHymn) : null}::jsonb, sacrament_hymn),
+      speakers = COALESCE(${updates.speakers ? JSON.stringify(updates.speakers) : null}::jsonb, speakers),
+      closing_hymn = COALESCE(${updates.closingHymn ? JSON.stringify(updates.closingHymn) : null}::jsonb, closing_hymn),
+      closing_prayer = COALESCE(${updates.closingPrayer ?? null}, closing_prayer)
+    WHERE id = ${id}
+    RETURNING id
+  `;
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return getMeetingById(Number(rows[0].id));
 }
 
 export async function deleteMeeting(id: number): Promise<boolean> {
-  throw new Error('deleteMeeting: database implementation coming in Week 04');
+  const rows = await sql`
+    DELETE FROM meetings
+    WHERE id = ${id}
+    RETURNING id
+  `;
+
+  return rows.length > 0;
 }
