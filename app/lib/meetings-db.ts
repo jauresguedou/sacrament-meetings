@@ -9,7 +9,8 @@ const ITEMS_PER_PAGE = 5;
 
 export async function getMeetings(
   query: string = '',
-  currentPage: number = 1
+  currentPage: number = 1,
+  date?: string
 ): Promise<SacramentMeeting[]> {
   const searchTerm = `%${query}%`;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -30,10 +31,13 @@ export async function getMeetings(
       closing_prayer              AS "closingPrayer"
     FROM meetings
     WHERE
-      presiding     ILIKE ${searchTerm}
-      OR conducting ILIKE ${searchTerm}
-      OR meeting_type ILIKE ${searchTerm}
-      OR speakers::text ILIKE ${searchTerm}
+      date = COALESCE(${date ?? null}::date, date)
+      AND (
+        presiding     ILIKE ${searchTerm}
+        OR conducting ILIKE ${searchTerm}
+        OR meeting_type ILIKE ${searchTerm}
+        OR speakers::text ILIKE ${searchTerm}
+      )
     ORDER BY date DESC
     LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
   `;
@@ -41,16 +45,20 @@ export async function getMeetings(
 }
 
 export async function getMeetingsTotalPages(
-  query: string = ''
+  query: string = '',
+  date?: string
 ): Promise<number> {
   const searchTerm = `%${query}%`;
   const rows = await sql`
     SELECT COUNT(*) FROM meetings
     WHERE
-      presiding     ILIKE ${searchTerm}
-      OR conducting ILIKE ${searchTerm}
-      OR meeting_type ILIKE ${searchTerm}
-      OR speakers::text ILIKE ${searchTerm}
+      date = COALESCE(${date ?? null}::date, date)
+      AND (
+        presiding     ILIKE ${searchTerm}
+        OR conducting ILIKE ${searchTerm}
+        OR meeting_type ILIKE ${searchTerm}
+        OR speakers::text ILIKE ${searchTerm}
+      )
   `;
   return Math.ceil(Number(rows[0].count) / ITEMS_PER_PAGE);
 }

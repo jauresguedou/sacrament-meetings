@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 type MeetingsSearchParams = {
   query?: string;
   page?: string;
+  date?: string;
 };
 
 export default async function MeetingsPage({
@@ -15,11 +16,11 @@ export default async function MeetingsPage({
 }: {
   searchParams: Promise<MeetingsSearchParams>;
 }) {
-  const { query = "", page = "1" } = await searchParams;
+  const { query = "", page = "1", date } = await searchParams;
   const currentPage = Math.max(1, Number.parseInt(page, 10) || 1);
   const [meetings, totalPages] = await Promise.all([
-    getMeetings(query, currentPage),
-    getMeetingsTotalPages(query),
+    getMeetings(query, currentPage, date),
+    getMeetingsTotalPages(query, date),
   ]);
 
   return (
